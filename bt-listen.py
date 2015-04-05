@@ -48,6 +48,7 @@ def getIntFromBytes(b):
     return int(a,2)
 
 def processDataBuffer(dataBuffer):
+    print("Processing data buffer")
     start = -1
 
     for i in range(len(dataBuffer)):
@@ -70,7 +71,7 @@ def processDataBuffer(dataBuffer):
         return end + 1
 
     #Valid Data!
-    print(repr(dataBuffer))
+    print("Data is Valid")
 
     key = getIntFromBytes(dataBuffer[start:start + 4])
     value = getIntFromBytes(dataBuffer[start + 4:start + 8])
@@ -107,7 +108,7 @@ def processDataBuffer(dataBuffer):
             print("Right")
             PIN_MAP['FRONT_BRAKE'].write(0)
             PIN_MAP['FRONT_MOTOR'].write(1)
-            pwmB.write(normalizedValue)
+            #pwmB.write(normalizedValue)
             PIN_MAP['BACK_BRAKE'].write(0)
             PIN_MAP['BACK_MOTOR'].write(1)
             pwmA.write(normalizedValue)
@@ -116,7 +117,7 @@ def processDataBuffer(dataBuffer):
             print("LEFT")
             PIN_MAP['FRONT_BRAKE'].write(0)
             PIN_MAP['FRONT_MOTOR'].write(0)
-            pwmB.write(1-normalizedValue) #255 being max
+            #pwmB.write(1-normalizedValue) #255 being max
             PIN_MAP['BACK_BRAKE'].write(0)
             PIN_MAP['BACK_MOTOR'].write(1)
             pwmA.write(normalizedValue)
@@ -163,6 +164,7 @@ class Profile(dbus.service.Object):
                 print("received: %d" % nBytes)
 
                 cut = processDataBuffer(dataBuffer)
+                print('processed data')
                 if(cut < (len(dataBuffer) - 1)):
                     dataBuffer = dataBuffer[cut: len(dataBuffer)]
                 else:
