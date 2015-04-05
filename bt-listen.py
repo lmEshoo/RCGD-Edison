@@ -16,9 +16,9 @@ pwmA = mraa.Pwm(3)
 pwmA.period_us(700)
 pwmA.enable(True)
 
-pwmB = mraa.Pwm(11)
-pwmB.period_us(700)
-pwmB.enable(True)
+#pwmB = mraa.Pwm(11)
+#pwmB.period_us(700)
+#pwmB.enable(True)
 
 import dbus.mainloop.glib
 try:
