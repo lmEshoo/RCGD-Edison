@@ -28,8 +28,8 @@ except ImportError:
 
 PIN_MAP = { 'BACK_MOTOR':mraa.Gpio(12), 'FRONT_MOTOR':mraa.Gpio(13), 'BACK_BRAKE':mraa.Gpio(9), 'FRONT_BRAKE': mraa.Gpio(8) }
 
-for key, value in PIN_MAP:
-    value.dir(mraa.DIR_OUT)
+for key in PIN_MAP.keys():
+    PIN_MAP[key].dir(mraa.DIR_OUT)
 
 
 
