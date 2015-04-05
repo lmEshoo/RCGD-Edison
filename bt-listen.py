@@ -34,8 +34,23 @@ for key in PIN_MAP.keys():
 
 
 XBOX_MAP = {
-    0x0E : 'LEFT_STICK'
-
+    0x0E : 'LEFT_STICK',
+    0x04: 'A',
+    0x05: 'B',
+    0x06: 'X',
+    0x07: 'Y',
+    0x08: 'START'
+    0x09: 'SELECT'
+    0x0A: 'DPAD_UP'
+    0x0B: 'DPAD_DOWN'
+    0x0C: 'DPAD_LEFT'
+    0x0D: 'DPAD_RIGHT'
+    0x0E: 'LEFT_STICK'
+    0x0F: 'RIGHT_STICK'
+    0x10: 'LEFT_BUMPER'
+    0x11: 'RIGHT_BUMPER'
+    0x12: 'LEFT_TRIGGER'
+    0x13: 'RIGHT_TRIGGER'
 }
 
 def getIntFromBytes(b):
@@ -47,41 +62,42 @@ def getIntFromBytes(b):
         a += c
     return int(a,2)
 
-def processDataBuffer(dataBuffer):
+def processDataBuffer(myDataBuffer):
     print("Processing data buffer")
-    start = -1
+    tStart = -1
 
-    for i in range(len(dataBuffer)):
-        if(ord(dataBuffer[i]) == 2):
-            start = i
+    for i in range(len(myDataBuffer)):
+        if(ord(myDataBuffer[i]) == 2):
+            tStart = i
             break
 
-    if(start == -1):
+    if(tStart == -1):
         print('No Start Bit Yet Incorrect')
         return 0
 
-    end = start + 9
+    tEnd = tStart + 9
 
-    if(end > len(dataBuffer)):
+    if(tEnd > len(myDataBuffer)):
         print('waiting for end')
         return 0
 
-    if(ord(end) != 0x03):
+    if(ord(tEnd) != 0x03):
         print('Corrupt Data')
-        return end + 1
+        return tEnd + 1
 
     #Valid Data!
     print("Data is Valid")
 
-    key = getIntFromBytes(dataBuffer[start:start + 4])
-    value = getIntFromBytes(dataBuffer[start + 4:start + 8])
+    key = getIntFromBytes(myDataBuffer[tStart:tStart + 4])
+    value = getIntFromBytes(myDataBuffer[tStart + 4:tStart + 8])
 
     print(key,value)
     try:
         xbox = XBOX_MAP[key]
+        print("Found Xbox Key", xbox)
     except KeyError:
         print ("Key not found!")
-        return end + 1
+        return tEnd + 1
 
     #LEFT_STICK is forward and back
     #RIGHT_STICK is left and right
@@ -128,7 +144,7 @@ def processDataBuffer(dataBuffer):
             pwmA.write(normalizedValue)
 
     print "returning"
-    return end + 1
+    return tEnd + 1
 
 
 class Profile(dbus.service.Object):
