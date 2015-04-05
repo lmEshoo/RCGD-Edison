@@ -47,6 +47,82 @@ def getIntFromBytes(b):
         a += c
     return int(a,2)
 
+def processDataBuffer(dataBuffer):
+    start = -1
+
+    for i in range(len(data)):
+        if(ord(data[i]) == 2):
+            start = i
+            break
+
+    if(start == -1):
+        print('No Start Bit Yet Incorrect')
+        return 0
+
+    end = start + 9
+
+    if(end > len(dataBuffer)):
+        print ('waiting for end')
+        return 0
+
+    if(ord(end) != 0x03):
+        print ('Corrupt Data')
+        return end + 1
+
+    #Valid Data!
+    print(repr(data))
+
+    key = getIntFromBytes(data[start:start + 4])
+    value = getIntFromBytes(data[start + 4:start + 8])
+
+    xbox = XBOX_MAP[key]
+
+    #LEFT_STICK is forward and back
+    #RIGHT_STICK is left and right
+        
+    normalizedValue = ((value + 32768)/(32768.0 + 32767.0))
+    if(xbox == 'LEFT_STICK'):
+        if(value > 100):
+            print("Forward")
+            #FORWARD
+            PIN_MAP['BACK_BRAKE'].write(0)
+            PIN_MAP['FRONT_MOTOR'].write(1)
+            PIN_MAP['BACK_MOTOR'].write(1)
+            pwmA.write(normalizedValue)#whatever the value is 
+        elif(value < -100):
+            print("Backward")
+            #BACKWARD
+            PIN_MAP['BACK_BRAKE'].write(0)
+            pwmA.write(normalizedValue)
+            PIN_MAP['BACK_MOTOR'].write(0)
+        else:
+            print("Stop")
+            #STOP
+            PIN_MAP['BACK_BRAKE'].write(1)
+            PIN_MAP['FRONT_BRAKE'].write(1)
+
+    elif(xbox == 'RIGHT_STICK'):
+        #GO RIGHT
+        if(value > 100):
+            print("Right")
+            PIN_MAP['FRONT_BRAKE'].write(0)
+            PIN_MAP['FRONT_MOTOR'].write(1)
+            pwmB.write(normalizedValue)
+            PIN_MAP['BACK_BRAKE'].write(0)
+            PIN_MAP['BACK_MOTOR'].write(1)
+            pwmA.write(normalizedValue)
+        #GO LEFT
+        elif (value < -100): #-100?
+            print("LEFT")
+            PIN_MAP['FRONT_BRAKE'].write(0)
+            PIN_MAP['FRONT_MOTOR'].write(0)
+            pwmB.write(1-normalizedValue) #255 being max
+            PIN_MAP['BACK_BRAKE'].write(0)
+            PIN_MAP['BACK_MOTOR'].write(1)
+            pwmA.write(normalizedValue)
+
+    return end + 1
+
 
 class Profile(dbus.service.Object):
     fd = -1
@@ -74,72 +150,24 @@ class Profile(dbus.service.Object):
         server_sock.send("This is Edison SPP loopback test\nAll data will be loopback\nPlease start:\n")
 
         try:
+            dataBuffer = ""
             while True:
-                data = [None] * 1024
-                nBytes = server_sock.recv_into(data)
+                #data = [None] * 1024
+                data = server_sock.recv(1024)
+                dataBuffer += data
+
+                nBytes = len(data)
 
                 if(nBytes > 10): print("Too many bytes!")
 
                 print("received: %d" % nBytes)
 
-                if(data[0] != 2): 
-                    print('Start Bit Incorrect')
-                    raise IOError
-
-                if(data[nBytes - 1] != 3):
-                    print('End Bit Incorrect')
-                    raise IOError
-
-
-                key = getIntFromBytes(data[1:5])
-                value = getIntFromBytes(data[5:9])
-
-                xbox = XBOX_MAP[key]
-
-                #LEFT_STICK is forward and back
-                #RIGHT_STICK is left and right
-                print("received: %d" % nBytes)
-                    
-                normalizedValue = ((value + 32768)/(32768.0 + 32767.0))
-                if(xbox == 'LEFT_STICK'):
-                    if(value > 100):
-                        print("Forward")
-                        #FORWARD
-                        PIN_MAP['BACK_BRAKE'].write(0)
-                        PIN_MAP['FRONT_MOTOR'].write(1)
-                        PIN_MAP['BACK_MOTOR'].write(1)
-                        pwmA.write(normalizedValue)#whatever the value is 
-                    elif(value < -100):
-                        print("Backward")
-                        #BACKWARD
-                        PIN_MAP['BACK_BRAKE'].write(0)
-                        pwmA.write(normalizedValue)
-                        PIN_MAP['BACK_MOTOR'].write(0)
-                    else:
-                        print("Stop")
-                        #STOP
-                        PIN_MAP['BACK_BRAKE'].write(1)
-                        PIN_MAP['FRONT_BRAKE'].write(1)
-
-                elif(xbox == 'RIGHT_STICK'):
-                    #GO RIGHT
-                    if(value > 100):
-                        print("Right")
-                        PIN_MAP['FRONT_BRAKE'].write(0)
-                        PIN_MAP['FRONT_MOTOR'].write(1)
-                        pwmB.write(normalizedValue)
-                        PIN_MAP['BACK_BRAKE'].write(0)
-                        PIN_MAP['BACK_MOTOR'].write(1)
-                        pwmA.write(normalizedValue)
-                    #GO LEFT
-                    elif (value < -100): #-100?
-                        print("LEFT")
-                        PIN_MAP['FRONT_BRAKE'].write(0)
-                        PIN_MAP['FRONT_MOTOR'].write(0)
-                        pwmB.write(1-normalizedValue) #255 being max
-                        PIN_MAP['BACK_BRAKE'].write(0)
-                        PIN_MAP['BACK_MOTOR'].write(1)
-                        pwmA.write(normalizedValue)
+                cut = processDataBuffer(dataBuffer)
+                if(cut < (len(dataBuffer) - 1)):
+                    dataBuffer = dataBuffer[cut: len(dataBuffer)]
+                else:
+                    dataBuffer = ""
+                
                 #print("received: %s" % data)
             #server_sock.send("looping back: %s\n" % data)
         except IOError:
