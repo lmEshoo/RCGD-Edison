@@ -77,11 +77,11 @@ def processDataBuffer(myDataBuffer):
 
     tEnd = tStart + 9
 
-    if(tEnd > len(myDataBuffer)):
+    if(tEnd >= len(myDataBuffer)):
         print('waiting for end')
         return 0
 
-    if(ord(tEnd) != 0x03):
+    if(ord(tEnd) != 3):
         print('Corrupt Data')
         return tEnd + 1
 
