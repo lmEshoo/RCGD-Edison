@@ -68,9 +68,12 @@ def processDataBuffer(myDataBuffer):
 
     for i in range(len(myDataBuffer)):
         if(ord(myDataBuffer[i]) == 2):
+            print("found start", i)
             tStart = i
             break
 
+    print("moving on")
+    
     if(tStart == -1):
         print('No Start Bit Yet Incorrect')
         return 0
@@ -143,7 +146,7 @@ def processDataBuffer(myDataBuffer):
             PIN_MAP['BACK_MOTOR'].write(1)
             pwmA.write(normalizedValue)
 
-    print "returning"
+    print("returning")
     return tEnd + 1
 
 
