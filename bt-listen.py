@@ -80,6 +80,8 @@ class Profile(dbus.service.Object):
 
                 if(nBytes > 10): print("Too many bytes!")
 
+                print("received: %d" % nBytes)
+
                 if(data[0] != 2): 
                     print('Start Bit Incorrect')
                     raise IOError
@@ -101,17 +103,20 @@ class Profile(dbus.service.Object):
                 normalizedValue = ((value + 32768)/(32768.0 + 32767.0))
                 if(xbox == 'LEFT_STICK'):
                     if(value > 100):
+                        print("Forward")
                         #FORWARD
                         PIN_MAP['BACK_BRAKE'].write(0)
                         PIN_MAP['FRONT_MOTOR'].write(1)
                         PIN_MAP['BACK_MOTOR'].write(1)
                         pwmA.write(normalizedValue)#whatever the value is 
                     elif(value < -100):
+                        print("Backward")
                         #BACKWARD
                         PIN_MAP['BACK_BRAKE'].write(0)
                         pwmA.write(normalizedValue)
                         PIN_MAP['BACK_MOTOR'].write(0)
                     else:
+                        print("Stop")
                         #STOP
                         PIN_MAP['BACK_BRAKE'].write(1)
                         PIN_MAP['FRONT_BRAKE'].write(1)
@@ -119,6 +124,7 @@ class Profile(dbus.service.Object):
                 elif(xbox == 'RIGHT_STICK'):
                     #GO RIGHT
                     if(value > 100):
+                        print("Right")
                         PIN_MAP['FRONT_BRAKE'].write(0)
                         PIN_MAP['FRONT_MOTOR'].write(1)
                         pwmB.write(normalizedValue)
@@ -127,6 +133,7 @@ class Profile(dbus.service.Object):
                         pwmA.write(normalizedValue)
                     #GO LEFT
                     elif (value < -100): #-100?
+                        print("LEFT")
                         PIN_MAP['FRONT_BRAKE'].write(0)
                         PIN_MAP['FRONT_MOTOR'].write(0)
                         pwmB.write(1-normalizedValue) #255 being max
