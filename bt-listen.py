@@ -12,6 +12,14 @@ import dbus.service
 import mraa
 #http://iotdk.intel.com/docs/master/mraa/python/example.html
 
+pwmA = mraa.Pwm(3)
+pwmA.period_us(700)
+pwmA.enable(True)
+
+pwmB = mraa.Pwm(11)
+pwmB.period_us(700)
+pwmB.enable(True)
+
 import dbus.mainloop.glib
 try:
   from gi.repository import GObject
@@ -23,13 +31,7 @@ PIN_MAP = { 'BACK_MOTOR':mraa.Gpio(12), 'FRONT_MOTOR':mraa.Gpio(13), 'BACK_BRAKE
 for key, value in PIN_MAP:
     value.dir(mraa.DIR_OUT)
 
-pwmA = mraa.Pwm(3)
-pwmA.period_us(700)
-pwmA.enable(True)
 
-pwmB = mraa.Pwm(11)
-pwmB.period_us(700)
-pwmB.enable(True)
 
 XBOX_MAP = {
     0x0E : 'LEFT_STICK'
