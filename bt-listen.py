@@ -39,17 +39,17 @@ XBOX_MAP = {
     0x05: 'B',
     0x06: 'X',
     0x07: 'Y',
-    0x08: 'START'
-    0x09: 'SELECT'
-    0x0A: 'DPAD_UP'
-    0x0B: 'DPAD_DOWN'
-    0x0C: 'DPAD_LEFT'
-    0x0D: 'DPAD_RIGHT'
-    0x0E: 'LEFT_STICK'
-    0x0F: 'RIGHT_STICK'
-    0x10: 'LEFT_BUMPER'
-    0x11: 'RIGHT_BUMPER'
-    0x12: 'LEFT_TRIGGER'
+    0x08: 'START',
+    0x09: 'SELECT',
+    0x0A: 'DPAD_UP',
+    0x0B: 'DPAD_DOWN',
+    0x0C: 'DPAD_LEFT',
+    0x0D: 'DPAD_RIGHT',
+    0x0E: 'LEFT_STICK',
+    0x0F: 'RIGHT_STICK',
+    0x10: 'LEFT_BUMPER',
+    0x11: 'RIGHT_BUMPER',
+    0x12: 'LEFT_TRIGGER',
     0x13: 'RIGHT_TRIGGER'
 }
 
