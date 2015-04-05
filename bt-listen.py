@@ -76,14 +76,14 @@ class Profile(dbus.service.Object):
                 data = [None] * 1024
                 nBytes = server_sock.recv_into(data)
 
-                if(nBytes > 10): print "Too many bytes!"
-                
+                if(nBytes > 10): print("Too many bytes!")
+
                 if(data[0] != 2): 
-                    print 'Start Bit Incorrect'
+                    print('Start Bit Incorrect')
                     raise IOError
 
                 if(data[nBytes - 1] != 3):
-                    print 'End Bit Incorrect'
+                    print('End Bit Incorrect')
                     raise IOError
 
 
@@ -114,7 +114,7 @@ class Profile(dbus.service.Object):
                         PIN_MAP['BACK_BRAKE'].write(1)
                         PIN_MAP['FRONT_BRAKE'].write(1)
 
-                elif(xbox == 'RIGHT_STICK')
+                elif(xbox == 'RIGHT_STICK'):
                     #GO RIGHT
                     if(value > 100):
                         PIN_MAP['FRONT_BRAKE'].write(0)
@@ -124,7 +124,7 @@ class Profile(dbus.service.Object):
                         PIN_MAP['BACK_MOTOR'].write(1)
                         pwmA.write(normalizedValue)
                     #GO LEFT
-                    else if (value < -100): #-100?
+                    elif (value < -100): #-100?
                         PIN_MAP['FRONT_BRAKE'].write(0)
                         PIN_MAP['FRONT_MOTOR'].write(0)
                         pwmB.write(1-normalizedValue) #255 being max
