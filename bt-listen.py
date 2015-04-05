@@ -50,8 +50,8 @@ def getIntFromBytes(b):
 def processDataBuffer(dataBuffer):
     start = -1
 
-    for i in range(len(data)):
-        if(ord(data[i]) == 2):
+    for i in range(len(dataBuffer)):
+        if(ord(dataBuffer[i]) == 2):
             start = i
             break
 
@@ -70,10 +70,10 @@ def processDataBuffer(dataBuffer):
         return end + 1
 
     #Valid Data!
-    print(repr(data))
+    print(repr(dataBuffer))
 
-    key = getIntFromBytes(data[start:start + 4])
-    value = getIntFromBytes(data[start + 4:start + 8])
+    key = getIntFromBytes(dataBuffer[start:start + 4])
+    value = getIntFromBytes(dataBuffer[start + 4:start + 8])
 
     xbox = XBOX_MAP[key]
 
