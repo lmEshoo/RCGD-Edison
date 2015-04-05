@@ -63,11 +63,11 @@ def processDataBuffer(dataBuffer):
     end = start + 9
 
     if(end > len(dataBuffer)):
-        print ('waiting for end')
+        print('waiting for end')
         return 0
 
     if(ord(end) != 0x03):
-        print ('Corrupt Data')
+        print('Corrupt Data')
         return end + 1
 
     #Valid Data!
@@ -76,7 +76,12 @@ def processDataBuffer(dataBuffer):
     key = getIntFromBytes(dataBuffer[start:start + 4])
     value = getIntFromBytes(dataBuffer[start + 4:start + 8])
 
-    xbox = XBOX_MAP[key]
+    print(key,value)
+    try:
+        xbox = XBOX_MAP[key]
+    except KeyError:
+        print ("Key not found!")
+        return end + 1
 
     #LEFT_STICK is forward and back
     #RIGHT_STICK is left and right
@@ -122,6 +127,7 @@ def processDataBuffer(dataBuffer):
             PIN_MAP['BACK_MOTOR'].write(1)
             pwmA.write(normalizedValue)
 
+    print "returning"
     return end + 1
 
 
