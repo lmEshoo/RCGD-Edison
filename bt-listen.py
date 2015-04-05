@@ -76,8 +76,8 @@ class Profile(dbus.service.Object):
                 data = [None] * 1024
                 nBytes = server_sock.recv_into(data)
 
-                if(nBytes > 10) print "Too many bytes!"
-
+                if(nBytes > 10): print "Too many bytes!"
+                
                 if(data[0] != 2): 
                     print 'Start Bit Incorrect'
                     raise IOError
